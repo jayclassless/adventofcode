@@ -8,7 +8,7 @@
             "name": "aoc2022",
             "type": "python",
             "request": "launch",
-            "module": "aoc2022.day3",
+            "module": "aoc2022.day4",
             "python": "${workspaceFolder}/2022/.venv/bin/python",
             "cwd": "${workspaceFolder}/2022",
             "justMyCode": true
