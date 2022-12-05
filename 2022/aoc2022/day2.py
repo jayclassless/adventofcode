@@ -1,7 +1,9 @@
 # https://adventofcode.com/2022/day/2
 
 from enum import IntEnum
-from pathlib import Path
+
+from .util import get_lines
+
 
 class Weapon(IntEnum):
   ROCK = 1
@@ -17,12 +19,6 @@ InputMapping = dict[str, Weapon]
 StrategyMapping = dict[str, Weapon | Result]
 Round = tuple[Weapon, Weapon]
 
-def get_lines(file: Path | str) -> list[str]:
-  with open(file) as fp:
-    return [
-      line.rstrip('\n')
-      for line in fp.readlines()
-    ]
 
 def determine_play(opponent: Weapon, result: Result) -> Weapon:
   if result == Result.DRAW:
@@ -81,9 +77,6 @@ def score_game(rounds: list[Round]) -> int:
   ])
 
 
-EXAMPLE = Path(__file__).parent / 'example.txt'
-ACTUAL = Path(__file__).parent / 'input.txt'
-
 INPUT_MAP: InputMapping = {
   'A': Weapon.ROCK,
   'B': Weapon.PAPER,
@@ -102,7 +95,7 @@ STRATEGY_MAP_PART_2: StrategyMapping = {
   'Z': Result.WIN
 }
 
-data = get_lines(ACTUAL)
+data = get_lines('2/input.txt')
 
 rounds = get_rounds(data, INPUT_MAP, STRATEGY_MAP_PART_1)
 print(f"Part 1 Total Score: {score_game(rounds)}")
