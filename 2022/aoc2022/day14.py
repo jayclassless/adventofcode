@@ -2,6 +2,7 @@
 
 
 from dataclasses import dataclass
+from typing import Union
 
 from .util import get_lines
 
@@ -41,7 +42,7 @@ def get_paths(lines: list[str]) -> list[Path]:
 
   return paths
 
-def make_cave(paths: list[Path]) -> Cave:
+def make_cave(paths: list[Path], endless: bool = True) -> Cave:
   max_x = max([
     max(path.start.x, path.end.x)
     for path in paths
@@ -50,10 +51,18 @@ def make_cave(paths: list[Path]) -> Cave:
     max(path.start.y, path.end.y)
     for path in paths
   ]) + 1
+
+  if not endless:
+    max_x *= 2
+
   cave: Cave = [
     [EMPTY] * max_x
     for _ in range(max_y)
   ]
+
+  if not endless:
+    cave.append([EMPTY] * max_x)
+    cave.append([ROCK] * max_x)
 
   for path in paths:
     if path.start.x == path.end.x:
@@ -69,15 +78,19 @@ def make_cave(paths: list[Path]) -> Cave:
 
   return cave
 
-def drop_sand(cave: Cave, origination: Point) -> bool:
+def drop_sand(cave: Cave, origination: Point) -> Union[Point, None]:
   x, y = origination.x, origination.y
+
+  if cave[y][x] != EMPTY:
+    # origination point is clogged
+    return None
 
   while True:
     y += 1
 
     if y >= len(cave):
       # fell out the bottom
-      return False
+      return None
 
     if cave[y][x] == EMPTY:
       # can move down
@@ -94,7 +107,26 @@ def drop_sand(cave: Cave, origination: Point) -> bool:
       continue
 
     cave[y - 1][x] = SAND
-    return True
+    return Point(x=x, y=y -1)
+
+def print_cave(cave: Cave):
+  min_x, max_x = len(cave[0]), 0
+  min_y, max_y = len(cave), 0
+
+  for y, row in enumerate(cave):
+    for x, value in enumerate(row):
+      if value != EMPTY:
+        if y > max_y: max_y = y
+        if y < min_y: min_y = y
+        if x > max_x: max_x = x
+        if x < min_x: min_x = x
+
+  for y, row in enumerate(cave):
+    if y > max_y or y < min_y: continue
+    for x, value in enumerate(row):
+      if x > max_x or x < min_x: continue
+      print(value, end='')
+    print('')
 
 def part1(cave: Cave) -> int:
   num_dropped = 0
@@ -105,16 +137,18 @@ def part1(cave: Cave) -> int:
   return num_dropped
 
 def part2(cave: Cave) -> int:
-  cave.append([EMPTY] * len(cave[0]))
-  cave.append([ROCK] * len(cave[0]))
+  x = part1(cave)
 
-  return - 1
+  # cave.pop()
+  # print_cave(cave)
+
+  return x
 
 
-data = get_lines('14/example.txt')
+data = get_lines('14/input.txt')
 
 cave = make_cave(get_paths(data))
 print(f"Part 1: {part1(cave)}")
 
-cave = make_cave(get_paths(data))
+cave = make_cave(get_paths(data), endless=False)
 print(f"Part 2: {part2(cave)}")
