@@ -1,0 +1,12 @@
+#!/bin/sh
+
+DAY=$1
+
+mkdir aoc2023/data/$DAY
+touch aoc2023/data/$DAY/example1.txt
+touch aoc2023/data/$DAY/example2.txt
+touch aoc2023/data/$DAY/input1.txt
+touch aoc2023/data/$DAY/input2.txt
+
+cp day.template aoc2023/day${DAY}.py
+sed -i "s/DAY/${DAY}/g" aoc2023/day${DAY}.py

@@ -1,0 +1,19 @@
+# https://adventofcode.com/2023/day/DAY
+
+from .util import get_lines
+
+
+def solve_part1(input: str) -> None:
+    print(input)
+    data = get_lines(input)
+
+
+def solve_part2(input: str) -> None:
+    print(input)
+    data = get_lines(input)
+
+
+solve_part1("DAY/example1.txt")
+# solve_part1("DAY/input1.txt")
+# solve_part2("DAY/example2.txt")
+# solve_part2("DAY/input2.txt")
