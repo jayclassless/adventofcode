@@ -14,3 +14,6 @@ def get_lines(file: Path | str) -> list[str]:
 class Point:
     x: int
     y: int
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
