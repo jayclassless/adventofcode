@@ -4,6 +4,7 @@
     "editor.formatOnSave": true
   },
   "rust-analyzer.linkedProjects": [
-    "2024/day1/Cargo.toml"
+    "2024/day1/Cargo.toml",
+    "2024/day2/Cargo.toml",
   ]
 }
