@@ -1,82 +1,48 @@
+use std::io::BufRead;
 use std::ops::Add;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Point {
-    pub x: usize,
-    pub y: usize,
+    pub x: isize,
+    pub y: isize,
 }
 
 impl Point {
-    pub fn new(x: usize, y: usize) -> Self {
+    pub fn new(x: isize, y: isize) -> Self {
         Self { x, y }
     }
 
-    pub fn neighbors(self) -> Vec<Self> {
-        let mut points = Vec::new();
-    
-        for direction in ALL_GRID_DIRECTIONS {
-            if let Some(point) = self.translate(direction) {
-                points.push(point);
-            }
-        }
-
-        points
+    pub fn neighbors(self) -> [Self; 8] {
+        ALL_GRID_DIRECTIONS.map(|d| self.translate(d))
     }
 
-    pub fn translate(self, direction: GridDirection) -> Option<Self> {
-        let mut new_x = self.x;
-        let mut new_y = self.y;
-
+    pub fn translate(self, direction: GridDirection) -> Self {
         match direction {
             GridDirection::U => {
-                if let Some(new) = new_y.checked_sub(1) {
-                    new_y = new
-                } else {
-                    return None
-                }
+                Self::new(self.x, self.y - 1)
             },
             GridDirection::UR => {
-                new_x += 1;
-                if let Some(new) = new_y.checked_sub(1) {
-                    new_y = new
-                } else {
-                    return None
-                }
+                Self::new(self.x + 1, self.y - 1)
             },
-            GridDirection::R => { new_x += 1 },
-            GridDirection::DR => { new_y += 1; new_x += 1 },
-            GridDirection::D => { new_y += 1 },
+            GridDirection::R => {
+                Self::new(self.x + 1, self.y)
+            },
+            GridDirection::DR => {
+                Self::new(self.x + 1, self.y + 1)
+            },
+            GridDirection::D => {
+                Self::new(self.x, self.y + 1)
+            },
             GridDirection::DL => {
-                new_y += 1;
-                if let Some(new) = new_x.checked_sub(1) {
-                    new_x = new
-                } else {
-                    return None
-                }
+                Self::new(self.x - 1, self.y + 1)
             },
             GridDirection::L => {
-                if let Some(new) = new_x.checked_sub(1) {
-                    new_x = new
-                } else {
-                    return None
-                }
+                Self::new(self.x - 1, self.y)
             },
             GridDirection::UL => {
-                if let Some(new) = new_y.checked_sub(1) {
-                    new_y = new
-                } else {
-                    return None
-                }
-
-                if let Some(new) = new_x.checked_sub(1) {
-                    new_x = new
-                } else {
-                    return None
-                }
+                Self::new(self.x - 1, self.y - 1)
             },
         }
-
-        Some(Self::new(new_x, new_y))
     }
 }
 
@@ -84,7 +50,7 @@ impl Add for Point {
     type Output = Point;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Point::new(self.x + rhs.x, self.y + rhs.y)
+        Self::new(self.x + rhs.x, self.y + rhs.y)
     }
 }
 
@@ -112,22 +78,100 @@ const ALL_GRID_DIRECTIONS: [GridDirection; 8] = [
 ];
 
 
+#[derive(Debug)]
 pub struct Grid<T> {
-    cells: Vec<Vec<T>>
+    size: usize,
+    cells: Vec<Vec<T>>,
+    // pos: Point,
 }
 
 impl<T> Grid<T> {
-    pub fn new() -> Self {
-        Self {
-            cells: Vec::new()
+    pub fn chars_from_file<R: BufRead>(reader: R) -> Grid<char> {
+        let mut cells: Vec<Vec<char>> = Vec::new();
+
+        for line in reader.lines() {
+            let l: Vec<char> = line.expect("could not parse line").chars().collect();
+            cells.push(l);
+        }
+
+        let size = cells[0].len();
+
+        if cells.len() != size {
+            panic!("grid is not square")
+        }
+
+        for row in cells.iter() {
+            if row.len() != size {
+                panic!("grid size is not uniform")
+            }
+        }
+
+        Grid {
+            size,
+            cells,
+            // pos: Point::new(0, 0),
         }
     }
 
-    pub fn get(&self, point: Point) -> Option<&T> {
-        if let Some(row) = self.cells.get(point.y) {
-            return row.get(point.x);
+    pub fn in_bounds(&self, x: usize, y: usize) -> bool {
+        x < self.size && y < self.size
+    }
+
+    pub fn point_in_bounds(&self, point: Point) -> bool {
+        if point.x >= 0 && point.y >= 0 {
+            return self.in_bounds(point.x as usize, point.y as usize);
+        }
+
+        false
+    }
+
+    pub fn get(&self, x: usize, y: usize) -> Option<&T> {
+        if let Some(row) = self.cells.get(y) {
+            return row.get(x);
         }
 
         None
     }
+
+    pub fn get_point(&self, point: Point) -> Option<&T> {
+        if !self.point_in_bounds(point) {
+            return None;
+        }
+
+        self.get(point.x as usize, point.y as usize)
+    }
+
+    pub fn set(&mut self, x: usize, y: usize, value: T) -> Option<Point> {
+        if !self.in_bounds(x, y) {
+            return None;
+        }
+
+        self.cells[y][x] = value;
+        Some(Point::new(x as isize, y as isize))
+    }
+
+    pub fn set_point(&mut self, point: Point, value: T) -> Option<Point> {
+        if !self.point_in_bounds(point) {
+            return None;
+        }
+
+        self.set(point.x as usize, point.y as usize, value)
+    }
 }
+
+// pub struct GridIteratorItem<T> {
+//     value: &T,
+//     point: Point,
+// }
+
+// impl<T> Iterator for Grid<T> {
+//     type Item = GridIteratorItem<T>;
+
+//     fn next(&mut self) -> Option<Self::Item> {
+//         let point = self.pos;
+//         let value = self.get_point(self.pos).unwrap();
+
+
+//         Some(GridIteratorItem { value, point })
+//     }
+// }
