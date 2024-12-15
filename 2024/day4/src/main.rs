@@ -1,7 +1,7 @@
 use std::fs;
 use std::env;
 use std::io;
-use shared::Grid;
+use shared::grid::Grid;
 
 
 fn search_board(grid: &Grid<char>, word: &[char]) -> usize {
@@ -21,7 +21,7 @@ fn main() {
 
     let input_filename = args.get(1).expect("must specify input file");
     let file = io::BufReader::new(fs::File::open(input_filename).expect("could not open file"));
-    let grid = Grid::<char>::chars_from_file(file);
+    let grid = Grid::<char>::chars_from_reader(file);
 
     let word = ['X', 'M', 'A', 'S'];
 
