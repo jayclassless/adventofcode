@@ -13,11 +13,11 @@ impl Point {
         Self { x, y }
     }
 
-    pub fn neighbors(self) -> [Self; 8] {
+    pub fn neighbors(&self) -> [Self; 8] {
         ALL_GRID_DIRECTIONS.map(|d| self.translate(d))
     }
 
-    pub fn translate(self, direction: GridDirection) -> Self {
+    pub fn translate(&self, direction: GridDirection) -> Self {
         match direction {
             GridDirection::U => {
                 Self::new(self.x, self.y - 1)

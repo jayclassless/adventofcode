@@ -7,7 +7,6 @@ pub struct Grid<T: Copy> {
     cells: Vec<Vec<T>>,
     width: usize,
     height: usize,
-    pos: Point,
 }
 
 impl<T: Copy> Grid<T> {
@@ -25,7 +24,6 @@ impl<T: Copy> Grid<T> {
             cells,
             width,
             height,
-            pos: Point::new(0, 0),
         }
     }
 
@@ -88,27 +86,44 @@ impl<T: Copy> Grid<T> {
     }
 }
 
+
+pub struct GridIter<'a, T: Copy> {
+    grid: &'a Grid<T>,
+    pos: Point,
+}
+
 #[derive(Debug, PartialEq)]
 pub struct GridIteratorItem<T> {
     pub value: T,
     pub point: Point,
 }
 
-impl<T: Copy> Iterator for Grid<T> {
+impl<'a, T: Copy> IntoIterator for &'a Grid<T> {
+    type Item = GridIteratorItem<T>;
+    type IntoIter = GridIter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        GridIter {
+            grid: self,
+            pos: Point::new(0, 0),
+        }
+    }
+}
+
+impl<'a, T: Copy> Iterator for GridIter<'a, T> {
     type Item = GridIteratorItem<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let point = self.pos;
-        let value = self.get_point(&self.pos);
+        let value = self.grid.get_point(&self.pos);
 
         if value.is_none() {
-            self.pos = Point::new(0, 0);
             return None
         }
 
         let mut new_x = point.x;
         let mut new_y = point.y;
-        if new_x == (self.width - 1).try_into().unwrap() {
+        if new_x == (self.grid.width - 1).try_into().unwrap() {
             new_x = 0;
             new_y += 1;
         } else {
@@ -208,45 +223,46 @@ mod tests {
 
     #[test]
     fn iterator() {
-        let mut a = Grid::<char>::new(test_input());
+        let a = Grid::<char>::new(test_input());
+        let mut iter = a.into_iter();
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'A');
         assert_eq!(x.point, Point::new(0, 0));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'B');
         assert_eq!(x.point, Point::new(1, 0));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'C');
         assert_eq!(x.point, Point::new(2, 0));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'D');
         assert_eq!(x.point, Point::new(0, 1));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'E');
         assert_eq!(x.point, Point::new(1, 1));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'F');
         assert_eq!(x.point, Point::new(2, 1));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'G');
         assert_eq!(x.point, Point::new(0, 2));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'H');
         assert_eq!(x.point, Point::new(1, 2));
 
-        let x = a.next().unwrap();
+        let x = iter.next().unwrap();
         assert_eq!(x.value, 'I');
         assert_eq!(x.point, Point::new(2, 2));
 
-        let x = a.next();
+        let x = iter.next();
         assert_eq!(x, None);
     }
 }
