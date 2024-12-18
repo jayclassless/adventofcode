@@ -8,7 +8,7 @@ use shared::grid_direction::GridDirection;
 use shared::point::Point;
 
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Hash)]
 struct Position {
     point: Point,
     direction: GridDirection,
@@ -48,7 +48,7 @@ fn find_guard(grid: &Map) -> Position {
     }
 }
 
-fn next_position(grid: &Map, current: Position) -> Position {
+fn next_position(grid: &Map, current: &Position) -> Position {
     let mut direction: GridDirection = current.direction;
     loop {
         let looking_at = current.point.translate(direction);
@@ -72,16 +72,17 @@ fn next_position(grid: &Map, current: Position) -> Position {
 }
 
 fn get_patrol_path(grid: &Map) -> (Path, bool) {
-    let mut path: Path = Vec::new();
+    let mut path = Vec::new();
+    let mut uniqs: HashSet<Position> = HashSet::new();
 
     let mut pos = find_guard(&grid);
     while grid.point_in_bounds(&pos.point) {
-        path.push(pos);
-        pos = next_position(grid, pos);
-
-        if (path.len() > 1) && (path.contains(&pos)) {
+        if !uniqs.insert(pos) {
             return (path, true);
         }
+        path.push(pos);
+
+        pos = next_position(grid, &pos);
     }
 
     (path, false)
