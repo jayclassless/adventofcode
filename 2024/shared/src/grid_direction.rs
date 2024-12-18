@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum GridDirection {
     U,
     UR,
@@ -20,3 +20,16 @@ pub const ALL_GRID_DIRECTIONS: [GridDirection; 8] = [
     GridDirection::L,
     GridDirection::UL,
 ];
+
+pub fn turn_90_cw(direction: GridDirection) -> GridDirection {
+    match direction {
+        GridDirection::U => { GridDirection::R },
+        GridDirection::UR => { GridDirection::DR },
+        GridDirection::R => { GridDirection::D },
+        GridDirection::DR => { GridDirection::DL },
+        GridDirection::D => { GridDirection::L },
+        GridDirection::DL => { GridDirection::UL },
+        GridDirection::L => { GridDirection::U },
+        GridDirection::UL => { GridDirection::UR },
+    }
+}

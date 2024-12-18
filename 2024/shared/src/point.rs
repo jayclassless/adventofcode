@@ -2,7 +2,7 @@ use std::ops::Add;
 use crate::grid_direction::{GridDirection, ALL_GRID_DIRECTIONS};
 
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point {
     pub x: isize,
     pub y: isize,

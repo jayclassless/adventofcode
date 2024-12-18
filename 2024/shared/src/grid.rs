@@ -2,7 +2,7 @@ use std::io::BufRead;
 use crate::point::Point;
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Grid<T: Copy> {
     cells: Vec<Vec<T>>,
     width: usize,
