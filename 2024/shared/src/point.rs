@@ -17,6 +17,15 @@ impl Point {
         ALL_GRID_DIRECTIONS.map(|d| self.translate(d))
     }
 
+    pub fn direct_neighbors(&self) -> [Self; 4] {
+        [
+            GridDirection::U,
+            GridDirection::R,
+            GridDirection::D,
+            GridDirection::L,
+        ].map(|d| self.translate(d))
+    }
+
     pub fn translate(&self, direction: GridDirection) -> Self {
         match direction {
             GridDirection::U => {
@@ -96,6 +105,18 @@ mod tests {
         assert!(result.contains(&Point::new(3, 3)));
         assert!(result.contains(&Point::new(3, 2)));
         assert!(result.contains(&Point::new(3, 1)));
+    }
+
+    #[test]
+    fn direct_neighbors() {
+        let a = Point::new(4, 2);
+        let result = a.direct_neighbors();
+
+        assert_eq!(result.len(), 4);
+        assert!(result.contains(&Point::new(4, 1)));
+        assert!(result.contains(&Point::new(5, 2)));
+        assert!(result.contains(&Point::new(4, 3)));
+        assert!(result.contains(&Point::new(3, 2)));
     }
 
     #[test]

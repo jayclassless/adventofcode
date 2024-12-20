@@ -38,6 +38,17 @@ impl<T: Copy> Grid<T> {
         Self::new(cells)
     }
 
+    pub fn digits_from_reader<R: BufRead>(reader: R) -> Grid<u8> {
+        let mut cells: Vec<Vec<u8>> = Vec::new();
+
+        for line in reader.lines() {
+            let l: Vec<u8> = line.expect("could not parse line").chars().map(|c| c.to_digit(10).expect("could not parse digit") as u8).collect();
+            cells.push(l);
+        }
+
+        Self::new(cells)
+    }
+
     pub fn in_bounds(&self, x: usize, y: usize) -> bool {
         x < self.width && y < self.height
     }
