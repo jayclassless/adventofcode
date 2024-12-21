@@ -1,0 +1,14 @@
+#!/bin/sh
+
+DAY=$1
+
+cargo new $DAY
+
+cd $DAY
+
+cargo add --path ../shared
+
+mkdir data
+touch data/example1.txt
+touch data/input1.txt
+
