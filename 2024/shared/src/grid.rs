@@ -1,4 +1,5 @@
 use std::io::BufRead;
+use std::io::BufReader;
 use crate::point::Point;
 
 
@@ -36,6 +37,11 @@ impl<T: Copy> Grid<T> {
         }
 
         Self::new(cells)
+    }
+
+    pub fn chars_from_string(str: &str) -> Grid<char> {
+        let reader = BufReader::new(str.as_bytes());
+        Self::chars_from_reader(reader)
     }
 
     pub fn digits_from_reader<R: BufRead>(reader: R) -> Grid<u8> {
@@ -97,6 +103,18 @@ impl<T: Copy> Grid<T> {
     }
 }
 
+impl<T: Copy + ToString> ToString for Grid<T> {
+    fn to_string(&self) -> String {
+       self.cells.iter()
+            .map(|row| row.iter()
+                .map(|c| c.to_string())
+                .collect::<Vec<String>>()
+                .join("")
+            )
+            .collect::<Vec<String>>()
+            .join("\n")
+    }
+}
 
 pub struct GridIter<'a, T: Copy> {
     grid: &'a Grid<T>,
@@ -275,5 +293,12 @@ mod tests {
 
         let x = iter.next();
         assert_eq!(x, None);
+    }
+    
+    #[test]
+    fn to_string() {
+        let a = Grid::<char>::new(test_input());
+
+        assert_eq!(a.to_string(), "ABC\nDEF\nGHI");
     }
 }

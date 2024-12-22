@@ -4,19 +4,7 @@
     "editor.formatOnSave": true
   },
   "rust-analyzer.linkedProjects": [
-    "2024/day1/Cargo.toml",
-    "2024/day2/Cargo.toml",
-    "2024/day3/Cargo.toml",
-    "2024/day4/Cargo.toml",
-    "2024/day5/Cargo.toml",
-    "2024/day6/Cargo.toml",
-    "2024/day7/Cargo.toml",
-    "2024/day8/Cargo.toml",
-    "2024/day9/Cargo.toml",
-    "2024/day10/Cargo.toml",
-    "2024/day11/Cargo.toml",
-    "2024/day12/Cargo.toml",
-    "2024/day13/Cargo.toml",
-    "2024/day14/Cargo.toml",
+    "2024/shared/Cargo.toml",
+    "2024/day15/Cargo.toml",
   ]
 }

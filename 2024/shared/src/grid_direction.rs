@@ -33,3 +33,13 @@ pub fn turn_90_cw(direction: GridDirection) -> GridDirection {
         GridDirection::UL => { GridDirection::UR },
     }
 }
+
+pub fn from_char(value: char) -> Option<GridDirection> {
+    match value {
+        '^' => { Some(GridDirection::U) },
+        '>' => { Some(GridDirection::R) },
+        'v' => { Some(GridDirection::D) },
+        '<' => { Some(GridDirection::L) },
+        _ => { None },
+    }
+}
