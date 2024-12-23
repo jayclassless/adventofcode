@@ -34,6 +34,19 @@ pub fn turn_90_cw(direction: GridDirection) -> GridDirection {
     }
 }
 
+pub fn turn_90_ccw(direction: GridDirection) -> GridDirection {
+    match direction {
+        GridDirection::U => { GridDirection::L },
+        GridDirection::UR => { GridDirection::UL },
+        GridDirection::R => { GridDirection::U },
+        GridDirection::DR => { GridDirection::UR },
+        GridDirection::D => { GridDirection::R },
+        GridDirection::DL => { GridDirection::DR },
+        GridDirection::L => { GridDirection::D },
+        GridDirection::UL => { GridDirection::DL },
+    }
+}
+
 pub fn from_char(value: char) -> Option<GridDirection> {
     match value {
         '^' => { Some(GridDirection::U) },
