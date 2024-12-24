@@ -6,6 +6,6 @@
   "rust-analyzer.linkedProjects": [
     "2024/shared/Cargo.toml",
     "2024/day15/Cargo.toml",
-    "2024/day16/Cargo.toml",
+    "2024/day17/Cargo.toml",
   ]
 }
