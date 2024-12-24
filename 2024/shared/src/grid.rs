@@ -28,6 +28,14 @@ impl<T: Copy> Grid<T> {
         }
     }
 
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
     pub fn chars_from_reader<R: BufRead>(reader: R) -> Grid<char> {
         let mut cells: Vec<Vec<char>> = Vec::new();
 
@@ -50,6 +58,16 @@ impl<T: Copy> Grid<T> {
         for line in reader.lines() {
             let l: Vec<u8> = line.expect("could not parse line").chars().map(|c| c.to_digit(10).expect("could not parse digit") as u8).collect();
             cells.push(l);
+        }
+
+        Self::new(cells)
+    }
+
+    pub fn empty_with_char(width: usize, height: usize, init: char) -> Grid<char> {
+        let mut cells = Vec::new();
+
+        for _ in 0..height {
+            cells.push(Vec::from_iter(init.to_string().repeat(width).chars()));
         }
 
         Self::new(cells)
