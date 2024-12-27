@@ -10,7 +10,7 @@ pub struct Grid<T: Copy> {
     height: usize,
 }
 
-impl<T: Copy> Grid<T> {
+impl<T: Copy + PartialEq> Grid<T> {
     pub fn new<X: Copy>(cells: Vec<Vec<X>>) -> Grid<X> {
         let height = cells.len();
         let width = if height > 0 { cells[0].len() } else { 0 };
@@ -119,6 +119,14 @@ impl<T: Copy> Grid<T> {
 
         self.set(point.x as usize, point.y as usize, value)
     }
+
+    pub fn find(&self, target: T) -> Option<Point> {
+        if let Some(search) = self.into_iter().find(|i| i.value == target) {
+            return Some(search.point);
+        }
+
+        None
+    }
 }
 
 impl<T: Copy + ToString> ToString for Grid<T> {
@@ -145,7 +153,7 @@ pub struct GridIteratorItem<T> {
     pub point: Point,
 }
 
-impl<'a, T: Copy> IntoIterator for &'a Grid<T> {
+impl<'a, T: Copy + PartialEq> IntoIterator for &'a Grid<T> {
     type Item = GridIteratorItem<T>;
     type IntoIter = GridIter<'a, T>;
 
@@ -157,7 +165,7 @@ impl<'a, T: Copy> IntoIterator for &'a Grid<T> {
     }
 }
 
-impl<'a, T: Copy> Iterator for GridIter<'a, T> {
+impl<'a, T: Copy + PartialEq> Iterator for GridIter<'a, T> {
     type Item = GridIteratorItem<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -265,6 +273,17 @@ mod tests {
         assert_eq!(result, None);
 
         let result = a.set_point(&Point::new(-1, 0), 'X');
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn find() {
+        let a = Grid::<char>::new(test_input());
+
+        let result = a.find('D');
+        assert_eq!(result, Some(Point::new(0, 1)));
+
+        let result = a.find('X');
         assert_eq!(result, None);
     }
 

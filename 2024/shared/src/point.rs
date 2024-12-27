@@ -2,7 +2,7 @@ use std::ops::Add;
 use crate::grid_direction::{GridDirection, ALL_GRID_DIRECTIONS};
 
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Point {
     pub x: isize,
     pub y: isize,
@@ -53,6 +53,10 @@ impl Point {
                 Self::new(self.x - 1, self.y - 1)
             },
         }
+    }
+
+    pub fn distance(&self, other: Point) -> isize {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
     }
 }
 
@@ -189,5 +193,13 @@ mod tests {
 
         assert_eq!(result.x, 3);
         assert_eq!(result.y, 1);
+    }
+
+    #[test]
+    fn distance() {
+        let a = Point::new(2, 3);
+
+        assert_eq!(a.distance(Point::new(5, 1)), 5);
+        assert_eq!(a.distance(Point::new(-1, -2)), 8);
     }
 }
