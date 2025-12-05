@@ -51,13 +51,52 @@ class Point:
 
         return Point(x=self.x + dx, y=self.y + dy)
 
-    def in_grid(self, grid: list[list[Any]]) -> bool:
-        return (
-            self.x >= 0
-            and self.x <= (len(grid[0]) - 1)
-            and self.y >= 0
-            and self.y <= (len(grid) - 1)
-        )
+
+@dataclass(order=True)
+class Cell(Point):
+    value: Any
+
+
+@dataclass
+class Grid:
+    values: list[list[Any]]
+
+    @property
+    def width(self):
+        return len(self.values[0])
+
+    @property
+    def height(self):
+        return len(self.values)
+
+    def cell(self, x: int, y: int) -> Cell | None:
+        if self.contains_coords(x, y):
+            return Cell(x=x, y=y, value=self.values[x][y])
+        return None
+
+    def contains_coords(self, x: int, y: int) -> bool:
+        return x >= 0 and x < self.width and y >= 0 and y < self.height
+
+    def contains(self, point: Point) -> bool:
+        return self.contains_coords(point.x, point.y)
+
+    def neighbors(self, point: Point) -> list[Cell]:
+        possible = [
+            (point.x - 1, point.y - 1),
+            (point.x, point.y - 1),
+            (point.x + 1, point.y - 1),
+            (point.x - 1, point.y),
+            (point.x + 1, point.y),
+            (point.x - 1, point.y + 1),
+            (point.x, point.y + 1),
+            (point.x + 1, point.y + 1),
+        ]
+
+        return [
+            Cell(x=x, y=y, value=self.values[x][y])
+            for x, y in possible
+            if self.contains_coords(x, y)
+        ]
 
 
 @dataclass(order=True)
@@ -74,5 +113,5 @@ class Position:
     def move(self, distance=1) -> "Position":
         return replace(self, point=self.point.move(self.direction, distance))
 
-    def in_grid(self, grid: list[list[Any]]) -> bool:
-        return self.point.in_grid(grid)
+    def in_grid(self, grid: Grid) -> bool:
+        return grid.contains(self.point)
