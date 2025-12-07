@@ -41,7 +41,7 @@ def solve_part2(input: str) -> None:
         total += len(accessible)
 
         for cell in accessible:
-            grid.values[cell.x][cell.y] = CHAR_REMOVED
+            grid.values[cell.y][cell.x] = CHAR_REMOVED
 
     print(total)
 

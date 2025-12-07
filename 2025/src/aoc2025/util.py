@@ -61,6 +61,10 @@ class Cell(Point):
 class Grid:
     values: list[list[Any]]
 
+    @classmethod
+    def from_input(cls, input: str) -> "Grid":
+        return cls(values=[list(line) for line in get_lines(input)])
+
     @property
     def width(self):
         return len(self.values[0])
@@ -71,7 +75,7 @@ class Grid:
 
     def cell(self, x: int, y: int) -> Cell | None:
         if self.contains_coords(x, y):
-            return Cell(x=x, y=y, value=self.values[x][y])
+            return Cell(x=x, y=y, value=self.values[y][x])
         return None
 
     def contains_coords(self, x: int, y: int) -> bool:
@@ -93,7 +97,7 @@ class Grid:
         ]
 
         return [
-            Cell(x=x, y=y, value=self.values[x][y])
+            Cell(x=x, y=y, value=self.values[y][x])
             for x, y in possible
             if self.contains_coords(x, y)
         ]
