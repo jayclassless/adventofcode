@@ -1,7 +1,8 @@
 from dataclasses import dataclass, replace
 from enum import IntEnum
+from math import sqrt
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -10,6 +11,18 @@ DATA_DIR = Path(__file__).parent / "data"
 def get_lines(file: Path | str) -> list[str]:
     with open(DATA_DIR / file) as fp:
         return [line.rstrip("\n") for line in fp.readlines()]
+
+
+def solve(
+    input_path: str, implementation: Callable[[str], Any], expected: Any | None = None
+):
+    actual = implementation(input_path)
+    if expected is None:
+        print(f"{input_path}: {actual} -- WARN: Specify expected")
+    elif actual == expected:
+        print(f"{input_path}: {actual}")
+    else:
+        print(f"{input_path}: {actual} -- ERROR: expected {expected}")
 
 
 class Rotation(IntEnum):
@@ -50,6 +63,26 @@ class Point:
             dx = distance
 
         return Point(x=self.x + dx, y=self.y + dy)
+
+    def distance_from(self, other: "Point") -> float:
+        return sqrt(((self.x - other.x) ** 2) + ((self.y - other.y) ** 2))
+
+
+@dataclass(order=True)
+class Point3D:
+    x: int
+    y: int
+    z: int
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y, self.z))
+
+    def distance_from(self, other: "Point3D") -> float:
+        return sqrt(
+            ((self.x - other.x) ** 2)
+            + ((self.y - other.y) ** 2)
+            + ((self.z - other.z) ** 2)
+        )
 
 
 @dataclass(order=True)
