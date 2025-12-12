@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from dataclasses import dataclass, replace
 from enum import IntEnum
 from math import sqrt
@@ -23,6 +24,11 @@ def solve(
         print(f"{input_path}: {actual}")
     else:
         print(f"{input_path}: {actual} -- ERROR: expected {expected}")
+
+
+class HashableDict[K, V](dict[K, V], Hashable):
+    def __hash__(self):
+        return hash(frozenset(self))
 
 
 class Rotation(IntEnum):
